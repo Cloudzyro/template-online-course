@@ -59,8 +59,9 @@ const links = [
       <div class="wrap bar">
         <a class="logo" href="/" aria-label={`${course.name}, home`}>
           <svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true">
-            <path d="M3 6h16M3 10h16" stroke="var(--rule)" stroke-width="1.6" />
-            <path d="M3 15h16M3 18h16" stroke="var(--accent)" stroke-width="1.6" />
+            <rect x="2.75" y="1.75" width="16.5" height="18.5" rx="3" fill="var(--card)" stroke="var(--ink)" stroke-width="1.5" />
+            <path d="M7 7.5h8" stroke="var(--rule)" stroke-width="1.5" />
+            <path d="M7 13h8M7 15.5h8" stroke="var(--accent)" stroke-width="1.3" />
           </svg>
           {course.name}
         </a>
@@ -94,7 +95,7 @@ const links = [
     position: sticky;
     top: 0;
     z-index: 20;
-    background: rgb(243 244 239 / 0.96);
+    background: var(--paper);
     border-bottom: 1px solid var(--line);
   }
   .bar {
