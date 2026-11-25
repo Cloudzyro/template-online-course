@@ -1,0 +1,195 @@
+---
+import Base from "../../layouts/Base.astro";
+import { course, modules, sample, tiers } from "../../data/site";
+import { usd } from "../../lib/course";
+
+const m = modules[sample.module];
+const l = m.lessons[sample.lesson];
+const from = Math.min(...tiers.map((t) => t.price));
+---
+
+<Base title={`Free lesson: ${l.title}`} description={`A free sample lesson from ${course.fullName}: ${l.title}.`}>
+  <header class="wrap head">
+    <p class="muted crumb">
+      <a href="/curriculum">Module {sample.module + 1}: {m.title}</a>
+    </p>
+    <h1 class="h1">{l.title}</h1>
+    <p class="lede">{sample.intro}</p>
+  </header>
+
+  <section class="wrap lesson" aria-label="Lesson">
+    <div class="player">
+      <figure class="video" aria-label="Video placeholder">
+        <div class="screen">
+          <svg viewBox="0 0 640 360" aria-hidden="true">
+            <rect width="640" height="360" fill="#1b221e" />
+            {[60, 100, 140, 180, 220, 260, 300].map((y) => <line x1="80" y1={y} x2="560" y2={y} stroke="#2f3a33" />)}
+            <line x1="120" y1="40" x2="120" y2="320" stroke="#5a2a25" />
+            <circle cx="320" cy="180" r="34" fill="#eef0ea" />
+            <path d="M310 162 L338 180 L310 198 Z" fill="#1b221e" />
+          </svg>
+        </div>
+        <figcaption class="muted">
+          Put your video here: an embed from your course platform or a <code>&lt;video&gt;</code> file. <span class="mono">{l.minutes}:00</span>
+        </figcaption>
+      </figure>
+
+      <h2 class="h2 steps-title">Do this today</h2>
+      <ol class="steps">
+        {
+          sample.steps.map((s, i) => (
+            <li>
+              <span class="n mono">{i + 1}</span>
+              <div>
+                <h3>{s.title}</h3>
+                <p>{s.text}</p>
+              </div>
+            </li>
+          ))
+        }
+      </ol>
+
+      <h2 class="h2 steps-title">From the transcript</h2>
+      <div class="transcript">{sample.transcript.map((p) => <p>{p}</p>)}</div>
+    </div>
+
+    <aside>
+      <h2>Module {sample.module + 1}</h2>
+      <ol>
+        {
+          m.lessons.map((x, i) => (
+            <li class:list={{ current: i === sample.lesson }}>
+              <span>{x.title}</span>
+              <span class="mono muted">{x.minutes} min</span>
+            </li>
+          ))
+        }
+      </ol>
+      <p class="muted small">The other lessons open when you enroll.</p>
+      <a class="btn btn-primary" href="/#pricing">Enroll from {usd(from)}</a>
+    </aside>
+  </section>
+</Base>
+
+<style>
+  .head {
+    padding-block: clamp(40px, 6vw, 72px) 40px;
+  }
+  .crumb {
+    font-size: 15px;
+    margin-bottom: 12px;
+  }
+  .crumb a {
+    text-decoration: none;
+  }
+  .crumb a:hover {
+    color: var(--ink);
+  }
+  .lede {
+    margin-top: 16px;
+  }
+  .lesson {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 300px;
+    gap: 48px;
+    align-items: start;
+    padding-bottom: 112px;
+  }
+  .screen {
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+  }
+  .video figcaption {
+    margin-top: 10px;
+    font-size: 13px;
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+  }
+  code {
+    font-family: var(--mono);
+    font-size: 12px;
+  }
+  .steps-title {
+    font-size: 28px;
+    margin: 48px 0 20px;
+  }
+  .steps {
+    display: grid;
+    gap: 0;
+    border-top: 1px solid var(--line-strong);
+  }
+  .steps li {
+    display: grid;
+    grid-template-columns: 40px 1fr;
+    gap: 12px;
+    padding-block: 16px;
+    border-bottom: 1px solid var(--rule);
+  }
+  .n {
+    font-size: 14px;
+    color: var(--accent);
+    padding-top: 3px;
+  }
+  h3 {
+    font-size: 17px;
+    font-weight: 500;
+  }
+  .steps p {
+    color: var(--ink-2);
+    margin-top: 2px;
+  }
+  .transcript {
+    display: grid;
+    gap: 14px;
+    color: var(--ink-2);
+    max-width: 40rem;
+  }
+  aside {
+    position: sticky;
+    top: 88px;
+    display: grid;
+    gap: 16px;
+    padding: 24px;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+  }
+  aside h2 {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--ink-3);
+  }
+  aside ol {
+    display: grid;
+  }
+  aside li {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 8px 10px;
+    margin-inline: -10px;
+    border-radius: 6px;
+    font-size: 15px;
+  }
+  aside li .mono {
+    font-size: 11px;
+    white-space: nowrap;
+    padding-top: 3px;
+  }
+  .current {
+    background: var(--raised);
+    font-weight: 500;
+  }
+  .small {
+    font-size: 13px;
+  }
+  @media (max-width: 900px) {
+    .lesson {
+      grid-template-columns: 1fr;
+    }
+    aside {
+      position: static;
+    }
+  }
+</style>

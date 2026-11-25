@@ -1,0 +1,171 @@
+---
+import "@fontsource-variable/familjen-grotesk";
+import "@fontsource-variable/martian-mono";
+import "../styles/global.css";
+import { course, instructor, tiers } from "../data/site";
+
+interface Props {
+  title?: string;
+  description?: string;
+  schema?: Record<string, unknown>;
+}
+
+const { title, description = course.description, schema } = Astro.props;
+const fullTitle = title ? `${title} | ${course.name}` : course.fullName;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const ogImage = new URL("/og.png", Astro.site);
+const courseSchema = {
+  "@context": "https://schema.org",
+  "@type": "Course",
+  name: course.fullName,
+  description: course.description,
+  provider: { "@type": "Person", name: instructor.name },
+  offers: tiers.map((t) => ({ "@type": "Offer", name: t.name, price: t.price, priceCurrency: "USD", category: "Paid" })),
+  hasCourseInstance: { "@type": "CourseInstance", courseMode: "Online", courseWorkload: "PT6H" },
+};
+const links = [
+  { href: "/#curriculum", label: "Curriculum" },
+  { href: "/#instructor", label: "Instructor" },
+  { href: "/#pricing", label: "Pricing" },
+  { href: "/#faq", label: "Questions" },
+];
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <meta name="theme-color" content="#f3f4ef" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={course.name} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <script type="application/ld+json" set:html={JSON.stringify(schema ?? courseSchema)} />
+  </head>
+  <body>
+    <a class="skip" href="#main">Skip to content</a>
+    <header class="site-header">
+      <div class="wrap bar">
+        <a class="logo" href="/" aria-label={`${course.name}, home`}>
+          <svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true">
+            <path d="M3 6h16M3 10h16" stroke="var(--rule)" stroke-width="1.6" />
+            <path d="M3 15h16M3 18h16" stroke="var(--accent)" stroke-width="1.6" />
+          </svg>
+          {course.name}
+        </a>
+        <nav aria-label="Main">
+          <ul>{links.map((l) => <li><a href={l.href}>{l.label}</a></li>)}</ul>
+        </nav>
+        <a class="btn btn-primary enroll" href="/#pricing">Enroll</a>
+      </div>
+    </header>
+    <main id="main">
+      <slot />
+    </main>
+    <footer class="site-footer">
+      <div class="wrap foot">
+        <p>
+          <strong>{course.name}</strong> <span class="muted">by {instructor.name}</span>
+        </p>
+        <ul>
+          <li><a href="/curriculum">Full curriculum</a></li>
+          <li><a href="/lessons/sample">Free sample lesson</a></li>
+          <li><a href={`mailto:${course.email}`}>{course.email}</a></li>
+        </ul>
+      </div>
+      <p class="wrap legal muted">&copy; {new Date().getFullYear()} {course.name}. Bookkeeping education, not tax or legal advice.</p>
+    </footer>
+  </body>
+</html>
+
+<style>
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    background: rgb(243 244 239 / 0.96);
+    border-bottom: 1px solid var(--line);
+  }
+  .bar {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+    min-height: 64px;
+  }
+  .logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 500;
+    font-size: 18px;
+    text-decoration: none;
+    margin-right: auto;
+  }
+  nav ul {
+    display: flex;
+    gap: 24px;
+  }
+  nav a {
+    font-size: 15px;
+    color: var(--ink-2);
+    text-decoration: none;
+    transition: color 150ms var(--ease);
+  }
+  nav a:hover {
+    color: var(--ink);
+  }
+  .enroll {
+    min-height: 38px;
+    padding: 0 16px;
+    font-size: 15px;
+  }
+  .site-footer {
+    border-top: 1px solid var(--line-strong);
+    padding-top: 40px;
+    font-size: 15px;
+  }
+  .foot {
+    display: flex;
+    justify-content: space-between;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+  strong {
+    font-weight: 500;
+  }
+  .foot ul {
+    display: flex;
+    gap: 8px 24px;
+    flex-wrap: wrap;
+  }
+  .foot a {
+    text-decoration: none;
+    color: var(--ink-2);
+  }
+  .foot a:hover {
+    color: var(--ink);
+    text-decoration: underline;
+  }
+  .legal {
+    margin-top: 32px;
+    padding-block: 20px;
+    border-top: 1px solid var(--line);
+    font-size: 13px;
+  }
+  @media (max-width: 760px) {
+    nav {
+      display: none;
+    }
+  }
+</style>

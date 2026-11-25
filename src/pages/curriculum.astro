@@ -1,0 +1,54 @@
+---
+import Base from "../layouts/Base.astro";
+import Modules from "../components/Modules.astro";
+import { course, tiers } from "../data/site";
+import { lessonCount, totalMinutes, duration, usd } from "../lib/course";
+
+const from = Math.min(...tiers.map((t) => t.price));
+---
+
+<Base title="Curriculum" description={`Every lesson in ${course.fullName}: ${lessonCount} lessons across 6 modules, ${duration(totalMinutes)} of video.`}>
+  <header class="wrap head">
+    <p class="muted crumb"><a href="/">{course.name}</a></p>
+    <h1 class="h1">Curriculum</h1>
+    <p class="lede">
+      <span class="mono">{lessonCount}</span> lessons in six modules, <span class="mono">{duration(totalMinutes)}</span> of video. Each module ends with an exercise in your own spreadsheet.
+    </p>
+  </header>
+  <section class="wrap list" aria-label="Modules and lessons">
+    <Modules open="all" />
+  </section>
+  <section class="wrap cta">
+    <a class="btn btn-primary" href="/#pricing">Enroll from {usd(from)}</a>
+    <a class="text-link" href="/lessons/sample">Watch the free lesson first</a>
+  </section>
+</Base>
+
+<style>
+  .head {
+    padding-block: clamp(40px, 6vw, 72px) 40px;
+  }
+  .crumb {
+    font-size: 15px;
+    margin-bottom: 12px;
+  }
+  .crumb a {
+    text-decoration: none;
+  }
+  .crumb a:hover {
+    color: var(--ink);
+  }
+  .lede {
+    margin-top: 16px;
+  }
+  .lede .mono {
+    font-size: 0.9em;
+  }
+  .cta {
+    display: flex;
+    gap: 24px;
+    align-items: center;
+    flex-wrap: wrap;
+    padding-block: 48px 112px;
+  }
+</style>

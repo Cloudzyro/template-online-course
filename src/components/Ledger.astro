@@ -1,0 +1,184 @@
+---
+// The hero moment: one month of a freelancer's ledger, drawn on green-ruled paper,
+// with money in, money out (in red ink), the tax set-aside and a double-underlined total.
+import { ledger } from "../data/site";
+
+const income = ledger.rows.filter((r) => r.amount > 0).reduce((s, r) => s + r.amount, 0);
+const spent = ledger.rows.filter((r) => r.amount < 0).reduce((s, r) => s - r.amount, 0);
+const profit = income - spent;
+const tax = Math.round(profit * ledger.taxRate);
+const yours = profit - tax;
+const fixed = (n: number) => Math.abs(n).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+---
+
+<figure class="ledger" aria-label={`A sample ledger for ${ledger.month}`}>
+  <div class="sheet">
+    <header>
+      <p class="title">{ledger.month}</p>
+      <p class="sub muted">Business account, closed Nov 2</p>
+    </header>
+    <table>
+      <thead>
+        <tr>
+          <th scope="col">Date</th>
+          <th scope="col">Description</th>
+          <th scope="col" class="cat">Category</th>
+          <th scope="col" class="r">In</th>
+          <th scope="col" class="r">Out</th>
+        </tr>
+      </thead>
+      <tbody>
+        {
+          ledger.rows.map((r) => (
+            <tr>
+              <td class="mono d">{r.date}</td>
+              <td>{r.what}</td>
+              <td class="cat muted">{r.cat}</td>
+              <td class="r mono">{r.amount > 0 ? fixed(r.amount) : ""}</td>
+              <td class="r mono out">{r.amount < 0 ? `(${fixed(r.amount)})` : ""}</td>
+            </tr>
+          ))
+        }
+      </tbody>
+    </table>
+    <dl class="sums">
+      <div><dt>Profit</dt><dd class="mono">{fixed(profit)}</dd></div>
+      <div><dt>Set aside for tax, {Math.round(ledger.taxRate * 100)}%</dt><dd class="mono out">({fixed(tax)})</dd></div>
+      <div class="yours"><dt>Yours to spend</dt><dd class="mono"><span class="total">${fixed(yours)}</span></dd></div>
+    </dl>
+  </div>
+  <figcaption class="muted">Sample month from the course spreadsheet</figcaption>
+</figure>
+
+<style>
+  .ledger {
+    width: 100%;
+  }
+  .sheet {
+    background-color: var(--card);
+    background-image: linear-gradient(to right, transparent 47px, rgb(173 58 47 / 0.35) 47px, rgb(173 58 47 / 0.35) 48px, transparent 48px);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    padding: 24px 24px 20px 64px;
+    box-shadow:
+      0 1px 2px rgb(27 34 30 / 0.05),
+      0 12px 32px rgb(27 34 30 / 0.08);
+  }
+  header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 16px;
+    flex-wrap: wrap;
+    padding-bottom: 12px;
+  }
+  .title {
+    font-size: 20px;
+    font-weight: 500;
+  }
+  .sub {
+    font-size: 13px;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+  }
+  th {
+    font-weight: 400;
+    font-size: 12px;
+    color: var(--ink-3);
+    text-align: left;
+    padding: 6px 8px 6px 0;
+    border-bottom: 1.5px solid var(--accent);
+  }
+  td {
+    padding: 8px 8px 8px 0;
+    border-bottom: 1px solid var(--rule);
+    white-space: nowrap;
+  }
+  td:nth-child(2) {
+    white-space: normal;
+  }
+  .d {
+    font-size: 12px;
+    color: var(--ink-2);
+  }
+  .mono {
+    font-size: 13px;
+  }
+  .r {
+    text-align: right;
+    padding-right: 0;
+    padding-left: 12px;
+  }
+  .out {
+    color: var(--red-ink);
+  }
+  .sums {
+    display: grid;
+    gap: 2px;
+    margin-top: 12px;
+    margin-left: auto;
+    width: min(100%, 300px);
+    font-size: 14px;
+  }
+  .sums div {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    padding-block: 4px;
+  }
+  .sums dt {
+    color: var(--ink-2);
+  }
+  .sums dd {
+    margin: 0;
+  }
+  .yours {
+    border-top: 1px solid var(--ink);
+    padding-top: 8px !important;
+    margin-top: 4px;
+    font-weight: 500;
+  }
+  .yours dt {
+    color: var(--ink) !important;
+  }
+  .yours dd {
+    font-size: 15px;
+  }
+  figcaption {
+    margin-top: 12px;
+    font-size: 13px;
+    text-align: right;
+  }
+  @media (max-width: 560px) {
+    .sheet {
+      padding: 20px 16px 16px 40px;
+      background-image: linear-gradient(to right, transparent 27px, rgb(173 58 47 / 0.35) 27px, rgb(173 58 47 / 0.35) 28px, transparent 28px);
+    }
+    .cat {
+      display: none;
+    }
+    td {
+      font-size: 13px;
+    }
+  }
+  @media (max-width: 420px) {
+    .sheet {
+      padding-left: 32px;
+      padding-right: 12px;
+      background-image: linear-gradient(to right, transparent 19px, rgb(173 58 47 / 0.35) 19px, rgb(173 58 47 / 0.35) 20px, transparent 20px);
+    }
+    .mono,
+    .d {
+      font-size: 11px;
+    }
+    td {
+      font-size: 12px;
+    }
+    .r {
+      padding-left: 6px;
+    }
+  }
+</style>
